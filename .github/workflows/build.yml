@@ -25,6 +25,14 @@ jobs:
 
       - name: Build solution
         run: dotnet build GuidGenerator.sln --configuration Release --no-restore
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            src/**/bin/Release/
+            tests/**/bin/Release/
   
   test:
     needs: build
@@ -39,23 +47,39 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore GuidGenerator.sln
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
 
       - name: Run tests
-        run: dotnet test GuidGenerator.sln --configuration Release --verbosity normal
+        run: dotnet test GuidGenerator.sln --configuration Release --no-build --verbosity normal
 
 
   publish:
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Download build output
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
       - name: Publish app
-        run: dotnet publish src/GuidGeneratorApp/GuidGeneratorApp.csproj --configuration Release --output publish --no-restore
+        run: dotnet publish src/GuidGeneratorApp/GuidGeneratorApp.csproj --configuration Release --output publish --no-build
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifact
+          name: GuidGeneratorApp-Release
           path: publish
+          retention-days: 1
