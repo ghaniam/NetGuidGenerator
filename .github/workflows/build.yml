@@ -32,7 +32,9 @@ jobs:
           name: build-output
           path: |
             src/**/bin/Release/
+            src/**/obj/
             tests/**/bin/Release/
+            tests/**/obj/
   
   test:
     needs: build
@@ -51,6 +53,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-output
+
+      - name: Restore dependencies
+        run: dotnet restore GuidGenerator.sln
 
       - name: Run tests
         run: dotnet test GuidGenerator.sln --configuration Release --no-build --verbosity normal
