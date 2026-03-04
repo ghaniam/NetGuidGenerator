@@ -79,6 +79,9 @@ jobs:
         with:
           name: build-output
 
+      - name: Restore dependencies
+        run: dotnet restore GuidGenerator.sln
+
       - name: Publish app
         run: dotnet publish src/GuidGeneratorApp/GuidGeneratorApp.csproj --configuration Release --output publish --no-build
 
