@@ -1,4 +1,4 @@
-name: Build and Test
+name: Pipeline
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  continuous-integration:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,68 +26,29 @@ jobs:
       - name: Build solution
         run: dotnet build GuidGenerator.sln --configuration Release --no-restore
 
-      - name: Upload build output
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: |
-            src/**/bin/Release/
-            src/**/obj/
-            tests/**/bin/Release/
-            tests/**/obj/
-  
-  test:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Download build output
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output
-
-      - name: Restore dependencies
-        run: dotnet restore GuidGenerator.sln
-
       - name: Run tests
         run: dotnet test GuidGenerator.sln --configuration Release --no-build --verbosity normal
 
+      - name: Create NuGet package
+        run: dotnet pack GuidGenerator.Core/GuidGenerator.Core.csproj --configuration Release --output nupkg --no-build
 
-  publish:
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Download build output
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output
-
-      - name: Restore dependencies
-        run: dotnet restore GuidGenerator.sln
-
-      - name: Publish app
-        run: dotnet publish src/GuidGeneratorApp/GuidGeneratorApp.csproj --configuration Release --output publish --no-build
-
-      - name: Upload build artifact
+      - name: Upload NuGet package
         uses: actions/upload-artifact@v4
         with:
-          name: GuidGeneratorApp-Release
-          path: publish
+          name: github-netguidgenerator
+          path: nupkg/*.nupkg
           retention-days: 1
+ 
+
+  # continuous-deployment:
+  #   needs: continuous-integration
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v4
+  #       with:
+  #         dotnet-version: '9.0.x'
