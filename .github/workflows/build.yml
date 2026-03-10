@@ -30,13 +30,13 @@ jobs:
         run: dotnet test GuidGenerator.sln --configuration Release --no-build --verbosity normal
 
       - name: Create NuGet package
-        run: dotnet pack GuidGenerator.Core/GuidGenerator.Core.csproj --configuration Release --output nupkg --no-build
+        run: dotnet pack GuidGenerator.Core/GuidGenerator.Core.csproj --configuration Release --output package --no-build
 
       - name: Upload NuGet package
         uses: actions/upload-artifact@v4
         with:
           name: github-netguidgenerator
-          path: nupkg/*.nupkg
+          path: package/*.nupkg
           retention-days: 1
  
 
