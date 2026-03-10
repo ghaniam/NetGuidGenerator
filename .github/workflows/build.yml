@@ -29,8 +29,30 @@ jobs:
       - name: Run tests
         run: dotnet test GuidGenerator.sln --configuration Release --no-build --verbosity normal
 
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: '5.x'
+        
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.10.2
+        
+      - name: Set Package Version
+        id: package_version
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "VERSION=${{ steps.gitversion.outputs.semVer }}" >> $GITHUB_OUTPUT
+          else
+            SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+            echo "VERSION=${{ steps.gitversion.outputs.semVer }}-${{ github.run_number }}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Display Package Version
+        run: echo "Package version will be ${{ steps.package_version.outputs.VERSION }}"
+        
       - name: Create NuGet package
-        run: dotnet pack GuidGenerator.Core/GuidGenerator.Core.csproj --configuration Release --output package --no-build
+        run: dotnet pack GuidGenerator.Core/GuidGenerator.Core.csproj --configuration Release --output package --no-build -p:Version=${{ steps.package_version.outputs.VERSION }}
 
       - name: Upload NuGet package
         uses: actions/upload-artifact@v4

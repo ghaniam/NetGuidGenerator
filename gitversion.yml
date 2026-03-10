@@ -1,0 +1,18 @@
+mode: ContinuousDelivery
+branches:
+  main:
+    mode: ContinuousDelivery
+    tag: ''
+    increment: Patch
+  develop:
+    mode: ContinuousDeployment
+    tag: 'beta'
+    increment: Minor
+  feature:
+    mode: ContinuousDeployment
+    tag: 'alpha'
+    increment: Inherit
+  pull-request:
+    mode: ContinuousDeployment
+    tag: 'pr'
+    increment: Inherit
