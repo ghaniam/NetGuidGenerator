@@ -1,8 +1,9 @@
+using GuidGenerator.Core;
 namespace GuidGenerator.Core.Tests
 {
     public class GuidGeneratorServiceTests
     {
-        private readonly GuidGeneratorService _guidGenerator;
+        private readonly IGuidGeneratorService _guidGenerator;
 
         public GuidGeneratorServiceTests()
         {

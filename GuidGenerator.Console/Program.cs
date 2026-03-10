@@ -1,4 +1,4 @@
-﻿using GuidGenerator;
+﻿using GuidGenerator.Core;
 
 Console.WriteLine("GUID Generator Application");
 Console.WriteLine("==========================");
