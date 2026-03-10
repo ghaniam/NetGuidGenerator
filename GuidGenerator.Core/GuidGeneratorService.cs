@@ -1,6 +1,6 @@
-﻿namespace GuidGenerator;
+﻿namespace GuidGenerator.Core;
 
-public class GuidGeneratorService
+public class GuidGeneratorService : IGuidGeneratorService
 {
     /// <summary>
     /// Generates a specified number of GUIDs.

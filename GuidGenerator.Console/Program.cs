@@ -1,4 +1,4 @@
-﻿using GuidGenerator;
+﻿using GuidGenerator.Core;
 
 Console.WriteLine("GUID Generator Application");
 Console.WriteLine("==========================");
@@ -37,12 +37,12 @@ while (true)
         Console.WriteLine();
         Console.WriteLine($"Generated {guids.Count} GUID(s):");
         Console.WriteLine(new string('-', 50));
-        
+
         for (int i = 0; i < guids.Count; i++)
         {
             Console.WriteLine($"{i + 1}. {guids[i]}");
         }
-        
+
         Console.WriteLine();
     }
     catch (ArgumentException ex)
